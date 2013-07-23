@@ -1,0 +1,15 @@
+| >!Run
+|
+| Windows Keys Configure
+| (C) Stephen Fryatt, 2001
+|
+| Version 0.12
+| 18 September 2001
+
+Set WinKeys$Dir  <Obey$Dir>
+
+IconSprites <WinKeys$Dir>.!Sprites
+
+WimpSlot -min 64K -max 64K
+
+Run <WinKeys$Dir>.!RunImage %*0

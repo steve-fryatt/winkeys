@@ -1,0 +1,20 @@
+_TaskName:Windows Keys Setup
+_Purpose:Configuring Windows Keys
+_Author:© Stephen Fryatt, 2001
+_Version:0.21 (15 December 2002)
+_ConfigText:WinKeys
+_ConfigHelp:\Sset the actions of the Windows keys.
+_ConfigSprite:co_winkeys
+
+Help00:\Sconfigure the selections and close this window.|M\Aconfigure the selections without closing this window.
+Help01:\Sclose this window without configuring any of the selections.|M\Areset the selections to the configured settings.
+Help02:\Sreset the selctions to their factory defaults.
+HelpKey:\Tstar command connected to the %0.|MType a command into the field, or drag an object from a directory window to enter its filename.
+KeyW:Windows key
+KeySW:shifted Windows key
+KeyCW:Ctrl-Windows key combination
+KeySCW:Shift-Ctrl-Windows key combination
+KeyM:Menu key
+KeySM:shifted Menu key
+KeyCM:Ctrl-Menu key combination
+KeySCM:Shift-Ctrl-Menu key combination

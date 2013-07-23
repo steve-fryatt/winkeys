@@ -1,0 +1,169 @@
+<document title="Windows Keys">
+<define name="version" value="0.21">
+<define name="date" value="15 December 2002" length=30 align="right">
+
+
+
+
+
+<literal mode="Text">
+=============================================================================
+Windows Keys - Use the extra keys on a Windows Keyboard          Version $$version$$
+
+(C) Stephen Fryatt, 2001                       $$date$$
+=============================================================================
+</literal>
+
+
+
+
+
+<chapter title="License" file="License">
+
+<cite>Windows Keys</cite> is <strong>Freeware</strong>.  Copyright is held by the author, Stephen Fryatt, 2001.
+
+<cite>Windows Keys</cite> may be copied freely, so long as it remains unaltered with all its files and documentation intact.
+
+If you wish to distribute <cite>Windows Keys</cite>, please contact me to get my permission. This is so that I can ensure that you have the latest version available. <cite>Windows Keys</cite> may not be sold, although Public Domain libraries may charge for the cost of discs.
+
+No guarantee is made as to the suitability or stability of <cite>Windows Keys</cite> for any particular purpose.  No liability can be accepted by the author for any problems or damage caused by the use of Windows Keys.
+
+</chapter>
+
+
+
+
+
+<chapter title="Introduction" file="Introduction">
+
+<cite>Windows Keys</cite> is a utility to make it easier to use the <cite>MS Windows</cite> specific keys under RISC OS 4.  Although the new OS recognises the keys, there is no easy way to use them.  Some applications, such as <cite>Zap</cite>, will support them but in general there is no easy way to get them to do anything.
+
+<cite>Windows Keys</cite> allows star commands to be attached to the <key>windows</key> and <key>menu</key> keys, for all of the <key>shift</key> and <key>ctrl</key> combinations.  These cam be used to launch applications, open directories or almost anything else.
+
+</chapter>
+
+
+
+
+
+<chapter title="Installation" file="Install">
+
+<cite>Windows Keys</cite> requires RISC OS 4 or later.  It is 26/32 bit neutral and should be compatible with RISC OS 5.
+
+To install <cite>Windows Keys</cite>, copy the <file>WinKeys</file> module to a suitable place and double-click on it to run.  If you want it to run on startup, the module should be placed in your boot sequence: this can be done by copying it into the <file>Choices:Boot.Tasks</file> directory or including it in the Run list in Select's <cite>Configure</cite> application.
+
+The <file>!WinKeys</file> application allows the key combinations to be easily configured.  It can be run on its own, but is intended to be used as a plugin to <cite>Configure</cite>.  To install as such, copy it into the <file>!Boot.ROxxxHook.Res.Configure</file> directory for your version of RISC OS; there will now be a <icon>WinKeys</icon> option in the main <cite>Configure</cite> window, although the machine may need to be re-booted for all the icons to appear correctly.
+
+</chapter>
+
+
+
+
+<chapter title="Setting Up the Keys" file="Configure">
+
+To set the keys, click on the <icon>WinKeys</icon> option in <cite>Configure</cite> (or double click on <file>!WinKeys</file> in a directory viewer if you don't wish to add the plugin). This will open a window with a section for the <key>windows</key> and <key>menu</key> keys.  Each has a line for every possible combination of <key>shift</key> and <key>ctrl</key> (the first, unmarked, line is for the key on its own): star commands can be entered into these, to be executed when that key combination is pressed.
+
+Almost any star command can be used, although there are some problems. <command>*Filer_Run</command> can be a problem when used with key combinations involving <key>shift</key>.  To run applications, the new RISC OS 4 command <command>*StartDesktopTask</command> is more reliable and will not cause things to be loaded into a text editor by mistake.  Watch out for applications that use <command>*Filer_Run</command> in their <file>!Run</file> files (<cite>Oregano</cite> is an example, as it calls <cite>BookMaker</cite> and - if installed - <cite>Cassia</cite>): these may need such calls changing if they are to work correctly.
+
+Dragging objects into the fields will enter the paths automatically.  If an application is dragged in the field will be cleared and the correct <command>*StartDesktopTask</command> command will be entered.  If a directory is dragged in, the field will also be cleared and the correct <command>*Filer_OpenDir</command> command will be entered.  For all other objects, the path of the object will be entered at the caret (or at the end of the field if the caret isn't present).
+
+The various commands are stored in system variables that can be set by hand if required.  These variables are:
+
+<list>
+<li>&lt;WinKeys$Win&gt;
+<li>&lt;WinKeys$ShiftWin&gt;
+<li>&lt;WinKeys$CtrlWin&gt;
+<li>&lt;WinKeys$ShiftCtrlWin&gt;
+<li>&lt;WinKeys$Menu&gt;
+<li>&lt;WinKeys$ShiftWMenu&gt;
+<li>&lt;WinKeys$CtrlMenu&gt;
+<li>&lt;WinKeys$ShiftCtrlMenu&gt;
+</list>
+
+When run, the <cite>WinKeys</cite> module will look for an Obey file in the directory <file>Choices:WinKeys.SetKeys</file> and run it if it is present.  This file should contain lines to set the variables above as required; the configure utility will automatically create this file when the <icon>Set</icon> button is pressed.
+
+An example file might look something like this:
+
+<codeblock>
+| WinKeys Setup File
+|
+| This file was autogenerated by WinKey Setup.
+
+Set WinKeys$Win StartDesktopTask Resources:$.Apps.!TechWrite
+Set WimKeys$ShiftWin StartDesktopTask Resources:$.Apps.!Publisher
+Set WinKeys$Menu StartDesktopTask Resources:$.Apps.!Messenger
+Set WinKeys$ShiftMenu StartDesktopTask Resources:$.Apps.!Oregano
+Set WinKeys$CtrlMenu StartDesktopTask Resources:$.Apps.!FTPc
+</codeblock>
+
+Note that all the applications are stored within the Apps folder on the icon bar -- this is not necessary and can be changed as required.
+
+</chapter>
+
+
+
+
+
+<chapter title="Version History" file="History">
+
+The following is a list of all the versions of <cite>Windows Keys</cite>.
+
+
+<subhead title="0.10 (14 September 2001)">
+
+<list>
+<li>Initial release version.
+</list>
+
+
+<subhead title="0.12 (18 September 2001)">
+
+<list>
+<li>Fixed incorrect WimpSlot command in <file>!WinKeys.!Run</file>.
+<li>Interactive Help support added to WinKeys plugin.
+<li>Commands are now called with <command>Wimp_StartTask</command> instead of OS_CLI.
+</list>
+
+
+<subhead title="0.13 (23 September 2001)">
+
+<list>
+<li>Unclaimed <key>windows</key>/<key>menu</key> key presses (where the associated system variable isn't defined) are now passed on to other applications.
+</list>
+
+
+<subhead title="0.20 (5 December 2002)">
+
+Public Beta release.
+
+<list>
+<li>Module converted to new format and checked for 32-bit compatibility.
+</list>
+
+
+<subhead title="0.21 (15 December 2002)">
+
+Public Beta release.
+
+<list>
+<li>Correctly linked version of Configure plugin supplied.
+</list>
+
+</chapter>
+
+
+<literal mode="Text">
+
+
+Updates and Contacting Me
+-------------------------
+
+  If you have any comments about Windows Keys, or would like to report any
+  bugs that you find, you can email me at the address below.
+
+  Updates to Windows Keys and more programs for RISC OS computers can be
+  found on my website at http://www.stevefryatt.org.uk/software/
+
+  Stephen Fryatt
+  email: steve@stevefryatt.org.uk
+</literal>
