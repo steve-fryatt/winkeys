@@ -101,7 +101,7 @@ CommandDesktop
 	STMFD	R13!,{R14}
 
 	MOV	R2,R0
-	ADR	R1,title_string
+	ADR	R1,TitleString
 	MOV	R0,#2
 	SWI	XOS_Module
 
@@ -110,92 +110,92 @@ CommandDesktop
 ; ======================================================================================================================
 
 InitCode
-          STMFD     R13!,{R14}
+	STMFD	R13!,{R14}
 
 ; Claim 296 bytes of workspace for ourselves and store the pointer in our private workspace.
 ; This space is used for everything; both the module 'back-end' and the WIMP task.
 
-          MOV       R0,#6
-          MOV       R3,#WS_Size
-          SWI       "XOS_Module"
-          BVS       init_exit
-          STR       R2,[R12]
-          MOV       R12,R2
+	MOV	R0,#6
+	MOV	R3,#WS_Size
+	SWI	XOS_Module
+	BVS	InitExit
+	STR	R2,[R12]
+	MOV	R12,R2
 
 ; Initialise the workspace that was just claimed.
 
-          MOV       R0,#0
-          STR       R0,[R12,#WS_TaskHandle]         ; Zero the task handle.
+	MOV	R0,#0
+	STR	R0,[R12,#WS_TaskHandle]			; Zero the task handle.
 
-.init_exit
-          LDMFD     R13!,{PC}
+InitExit
+	LDMFD	R13!,{PC}
 
 ; ----------------------------------------------------------------------------------------------------------------------
 
 FinalCode
-          STMFD     R13!,{R14}
-          LDR       R12,[R12]
+	STMFD	R13!,{R14}
+	LDR	R12,[R12]
 
 ; Kill the wimp task if it's running.
 
-          LDR       R0,[R12,#WS_TaskHandle]
-          CMP       R0,#0
-          BLE       final_free_ws
+	LDR	R0,[R12,#WS_TaskHandle]
+	CMP	R0,#0
+	BLE	FinalFreeWorkspace
 
-          LDR       R1,Task
-          SWI       "XWimp_CloseDown"
-          MOV       R1,#0
-          STR       R1,[R12,#WS_TaskHandle]
+	LDR	R1,Task
+	SWI	XWimp_CloseDown
+	MOV	R1,#0
+	STR	R1,[R12,#WS_TaskHandle]
 
-.final_free_ws
-          TEQ       R10,#1
-          TEQEQ     R12,#0
-          BEQ       final_exit
-          MOV       R0,#7
-          MOV       R2,R12
-          SWI       "XOS_Module"
+FinalFreeWorkspace
+	TEQ	R10,#1
+	TEQEQ	R12,#0
+	BEQ	FinalExit
+	MOV	R0,#7
+	MOV	R2,R12
+	SWI	XOS_Module
 
-.final_exit
-          LDMFD     R13!,{PC}
+FinalExit
+	LDMFD	R13!,{PC}
 
 ; ======================================================================================================================
 
 ServiceCode
-          TEQ       R1,#&27
-          TEQNE     R1,#&49
-          TEQNE     R1,#&4A
+	TEQ	R1,#&27
+	TEQNE	R1,#&49
+	TEQNE	R1,#&4A
 
-          MOVNE     PC,R14
+	MOVNE	PC,R14
 
-          STMFD     R13!,{R14}
-          LDR       R12,[R12]
+	STMFD	R13!,{R14}
+	LDR	R12,[R12]
 
-.service_reset
-          TEQ       R1,#&27
-          BNE       service_start_wimp
+ServiceReset
+	TEQ	R1,#&27
+	BNE	ServiceStartWimp
 
-          MOV       R14,#0
-          STR       R14,[R12,#WS_TaskHandle]
-          LDMFD     R13!,{PC}
+	MOV	R14,#0
+	STR	R14,[R12,#WS_TaskHandle]
+	LDMFD	R13!,{PC}
 
-.service_start_wimp
-          TEQ       R1,#46
-          BNE       service_started_wimp
+ServiceStartWimp
+	TEQ	R1,#46
+	BNE	ServiceStartedWimp
 
-          LDR       R14,[R12,#WS_TaskHandle]
-          TEQ       R14,#0
-          MOVEQ     R14,#NOT-1
-          STREQ     R14,[R12,#WS_TaskHandle]
-          ADREQ     R0,CommandDesktop
-          MOVEQ     R1,#0
-          LDMFD     R13!,{PC}
+	LDR	R14,[R12,#WS_TaskHandle]
+	TEQ	R14,#0
+	MOVEQ	R14,#:NOT:-1			; Should be MVNEQ R14,#NOT-1?
+	STREQ	R14,[R12,#WS_TaskHandle]
+	ADREQ	R0,CommandDesktop
+	MOVEQ	R1,#0
+	LDMFD	R13!,{PC}
 
-.service_started_wimp
-          LDR       R14,[R12,#WS_TaskHandle]
-          CMN       R14,#1
-          MOVEQ     R14,#0
-          STREQ     R14,[R12,#WS_TaskHandle]
-          LDMFD     R13!,{PC}
+ServiceStartedWimp
+	LDR	R14,[R12,#WS_TaskHandle]
+	CMN	R14,#1
+	MOVEQ	R14,#0
+	STREQ	R14,[R12,#WS_TaskHandle]
+	LDMFD	R13!,{PC}
 
 ; ======================================================================================================================
 
@@ -215,7 +215,7 @@ TaskName
 	DCB	"Windows Keys",0
 
 MisusedStartCommand
-	DCD	0
+	DCDU	0				; \TODO -- Remove U
 	DCB	"Use *Desktop to start WinKeys.",0
 	ALIGN
 
@@ -246,112 +246,113 @@ WindowDefinition
 ; ======================================================================================================================
 
 TaskCode
-          LDR       R12,[R12]
-          ADRW      R13,WS_Size+4         ; Set the stack up.
+	LDR	R12,[R12]
+	ADD	R13,R12,#WS_Size			; Set the stack up.
+	ADD	R13,R13,#4
 
 ; Check that we aren't in the desktop.
 
-          SWI       "XWimp_ReadSysInfo"
-          TEQ       R0,#0
-          ADREQ     R0,MisusedStartCommand
-          SWIEQ     "OS_GenerateError"
+	SWI	XWimp_ReadSysInfo
+	TEQ	R0,#0
+	ADREQ	R0,MisusedStartCommand
+	SWIEQ	OS_GenerateError
 
 ; Kill any previous version of our task which may be running.
 
-          LDR       R0,[R12,#WS_TaskHandle]
-          TEQ       R0,#0
-          LDRGT     R1,Task
-          SWIGT     "XWimp_CloseDown"
-          MOV       R0,#0
-          STRGT     R0,[R12,#WS_TaskHandle]
+	LDR	R0,[R12,#WS_TaskHandle]
+	TEQ	R0,#0
+	LDRGT	R1,Task
+	SWIGT	XWimp_CloseDown
+	MOV	R0,#0
+	STRGT	R0,[R12,#WS_TaskHandle]
 
 ; Set the Quit flag to zero
 
-          STR       R0,[R12,#WS_Quit]
+	STR	R0,[R12,#WS_Quit]
 
 ; (Re) initialise the module as a Wimp task.
 
-          LDR       R0,WimpVersion
-          LDR       R1,Task
-          ADR       R2,TaskName
-          ADR       R3,WimpMessageList
-          SWI       "XWimp_Initialise"
-          SWIVS     "OS_Exit"
-          STR       R1,[R12,#WS_TaskHandle]
+	LDR	R0,WimpVersion
+	LDR	R1,Task
+	ADR	R2,TaskName
+	ADR	R3,WimpMessageList
+	SWI	XWimp_Initialise
+	SWIVS	OS_Exit
+	STR	R1,[R12,#WS_TaskHandle]
 
 ; Create the window and open it on the next poll.
 
-          ADR       R1,WindowDefinition
-          SWI       "Wimp_CreateWindow"
-          STR       R0,[R12,#WS_WinHandle]
+	ADR	R1,WindowDefinition
+	SWI	Wimp_CreateWindow
+	STR	R0,[R12,#WS_WinHandle]
 
-          ADRW      R1,WS_Block
+	ADD	R1,R12,#WS_Block
 
-          STR       R0,[R1,#0]
-          SWI       "Wimp_GetWindowState"
-          MVN       R0,#NOT-3
-          STR       R0,[R1,#24]
-          SWI       "Wimp_OpenWindow"
+	STR	R0,[R1,#0]
+	SWI	Wimp_GetWindowState
+	MOV	R0,#-3
+	STR	R0,[R1,#24]
+	SWI	Wimp_OpenWindow
 
 ; Set the variables from the choices file (an obey file).
 
-          BL        SetKeyVariables
+	BL	SetKeyVariables
 
 ; ----------------------------------------------------------------------------------------------------------------------
 
-.poll_loop
-          LDR       R0,PollMask
-          SWI       "Wimp_Poll"
+PollLoop
+	LDR	R0,PollMask
+	SWI	Wimp_Poll
 
-.poll_event_open_window
-          TEQ       R0,#2
-          BNE       poll_event_close_window
+PollEventOpenWindow
+	TEQ	R0,#2
+	BNE	PollEventCloseWindow
 
-          SWI       "Wimp_OpenWindow"
-          B         poll_loop_end
+	SWI	Wimp_OpenWindow
+	B	PollLoopEnd
 
-.poll_event_close_window
-          TEQ       R0,#3
-          BNE       poll_event_key_press
+PollEventCloseWindow
+	TEQ	R0,#3
+	BNE	PollEventKeyPress
 
-          SWI       "Wimp_CloseWindow"
-          B         poll_loop_end
+	SWI	Wimp_CloseWindow
+	B	PollLoopEnd
 
-.poll_event_key_press
-          TEQ       R0,#8
-          BNE       poll_event_wimp_message
+PollEventKeyPress
+	TEQ	R0,#8
+	BNE	PollEventWimpMessage
 
-          BL        key_press
-          B         poll_loop_end
+	BL	KeyPress
+	B	PollLoopEnd
 
-.poll_event_wimp_message
-          TEQ       R0,#17
-          TEQNE     R0,#18
-          BNE       poll_loop_end
+PollEventWimpMessage
+	TEQ	R0,#17
+	TEQNE	R0,#18
+	BNE	PollLoopEnd
 
-          LDR       R0,[R1,#16]
-          TEQ       R0,#0
-          MOVEQ     R0,#1
-          STREQ     R0,[R12,#WS_Quit]
+	LDR	R0,[R1,#16]
+	TEQ	R0,#0
+	MOVEQ	R0,#1
+	STREQ	R0,[R12,#WS_Quit]
 
-.poll_loop_end
-          LDR       R0,[R12,#WS_Quit]
-          TEQ       R0,#0
-          BEQ       poll_loop
+PollLoopEnd
+	LDR	R0,[R12,#WS_Quit]
+	TEQ	R0,#0
+	BEQ	PollLoop
 
 ; ----------------------------------------------------------------------------------------------------------------------
 
-.close_down
-          LDR       R0,[R12,#WS_TaskHandle]
-          LDR       R1,Task
-          SWI       "XWimp_CloseDown"
+CloseDown
+	LDR	R0,[R12,#WS_TaskHandle]
+	LDR	R1,Task
+	SWI	XWimp_CloseDown
 
 ; Set the task handle to zero and die.
 
-          MOV       R0,#0
-          STR       R0,[R12,#WS_TaskHandle]
+	MOV	R0,#0
+	STR	R0,[R12,#WS_TaskHandle]
 
-          SWI       "OS_Exit"
+	SWI	OS_Exit
 
 ; ======================================================================================================================
 
@@ -375,84 +376,84 @@ Key8
 
 ; ----------------------------------------------------------------------------------------------------------------------
 
-.key_press
-          STMFD     R13!,{R14}
+KeyPress
+	STMFD	R13!,{R14}
 
-          LDR       R5,[R1,#24]
+	LDR	R5,[R1,#24]
 
-          MOV       R2,#&1C0
-          TEQ       R5,R2
-          ADREQ     R0,Key1
-          BEQ       key_press_found
+	MOV	R2,#&1C0
+	TEQ	R5,R2
+	ADREQ	R0,Key1
+	BEQ	KeyPressFound
 
-          ADD       R2,R2,#1
-          TEQ       R5,R2
-          ADREQ     R0,Key5
-          BEQ       key_press_found
+	ADD	R2,R2,#1
+	TEQ	R5,R2
+	ADREQ	R0,Key5
+	BEQ	KeyPressFound
 
-          MOV       R2,#&1D0
-          TEQ       R5,R2
-          ADREQ     R0,Key2
-          BEQ       key_press_found
+	MOV	R2,#&1D0
+	TEQ	R5,R2
+	ADREQ	R0,Key2
+	BEQ	KeyPressFound
 
-          ADD       R2,R2,#1
-          TEQ       R5,R2
-          ADREQ     R0,Key6
-          BEQ       key_press_found
+	ADD	R2,R2,#1
+	TEQ	R5,R2
+	ADREQ	R0,Key6
+	BEQ	KeyPressFound
 
-          MOV       R2,#&1E0
-          TEQ       R5,R2
-          ADREQ     R0,Key3
-          BEQ       key_press_found
+	MOV	R2,#&1E0
+	TEQ	R5,R2
+	ADREQ	R0,Key3
+	BEQ	KeyPressFound
 
-          ADD       R2,R2,#1
-          TEQ       R5,R2
-          ADREQ     R0,Key7
-          BEQ       key_press_found
+	ADD	R2,R2,#1
+	TEQ	R5,R2
+	ADREQ	R0,Key7
+	BEQ	KeyPressFound
 
-          MOV       R2,#&1F0
-          TEQ       R5,R2
-          ADREQ     R0,Key4
-          BEQ       key_press_found
+	MOV       R2,#&1F0
+	TEQ       R5,R2
+	ADREQ	R0,Key4
+	BEQ	KeyPressFound
 
-          ADD       R2,R2,#1
-          TEQ       R5,R2
-          ADREQ     R0,Key8
-          BEQ       key_press_found
+	ADD	R2,R2,#1
+	TEQ	R5,R2
+	ADREQ	R0,Key8
+	BEQ	KeyPressFound
 
-          MOV       R0,R5
-          SWI       "Wimp_ProcessKey"
-          LDMFD     R13!,{PC}
+	MOV	R0,R5
+	SWI	Wimp_ProcessKey
+	LDMFD	R13!,{PC}
 
-.key_press_found
-          MOV       R2,#256
-          MOV       R3,#0
-          MOV       R4,#0
-          SWI       "XOS_ReadVarVal"
+KeyPressFound
+	MOV	R2,#256
+	MOV	R3,#0
+	MOV	R4,#0
+	SWI	XOS_ReadVarVal
 
-          MOV       R0,#0
-          STRB      R0,[R1,R2]
-          MOV       R0,R1
+	MOV	R0,#0
+	STRB	R0,[R1,R2]
+	MOV	R0,R1
 
-          TEQ       R2,#0
-          BNE       key_press_run_command
+	TEQ	R2,#0
+	BNE	KeyPressRunCommand
 
-          MOV       R5,R0
-          SWI       "Wimp_ProcessKey"
-          LDMFD     R13!,{PC}
+	MOV	R5,R0
+	SWI	Wimp_ProcessKey
+	LDMFD	R13!,{PC}
 
-.key_press_run_command
-          SWINE     "XWimp_StartTask"
-          LDMFD     R13!,{PC}
+KeyPressRunCommand
+	SWINE	XWimp_StartTask
+	LDMFD	R13!,{PC}
 
 ; ======================================================================================================================
 
-.key_file_run
-          DCB      "Filer_Run "
+KeyFileRun
+	DCB	"Filer_Run "
 
-.key_file
-          DCB      "Choices:WinKeys.SetKeys",0
-          ALIGN
+KeyFile
+	DCB	"Choices:WinKeys.SetKeys",0
+	ALIGN
 
 ; ----------------------------------------------------------------------------------------------------------------------
 
@@ -460,14 +461,14 @@ SetKeyVariables
 	STMFD	R13!,{R0-R6,R14}
 
 	MOV	R0,#23
-	ADR	R1,key_file
+	ADR	R1,KeyFile
 	SWI	XOS_File
 	LDMVSFD	R13!,{R0-R6,PC}
 
 	TEQ	R0,#1
 	LDMNEFD	R13!,{R0-R6,PC}
 
-	ADR	R0,key_file_run
+	ADR	R0,KeyFileRun
 	SWI	XOS_CLI
 
 	LDMFD	R13!,{R0-R6,PC}
