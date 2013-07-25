@@ -97,7 +97,7 @@ CommandTable
 CommandDesktop
 	STMFD	R13!,{R14}
 
-	; Exit with V set if Desktop_PCKeys is used manually.
+	; Exit with V set if Desktop_WinKeys is used manually.
 
 	LDR	R14,[R12,#WS_TaskHandle]
 	CMN	R14,#1
@@ -105,7 +105,7 @@ CommandDesktop
 	MSRNE	CPSR_f, #9 << 28
 	LDMNEFD	R13!,{PC}
 
-	; Pass *Desktop_PCKeys to OS_Module.
+	; Pass *Desktop_WinKeys to OS_Module.
 
 	MOV	R2,R0
 	ADR	R1,TitleString
