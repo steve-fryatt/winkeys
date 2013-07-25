@@ -100,6 +100,7 @@ OUTDIR := build
 RUNIMAGE := WinKeys,ffa
 README := ReadMe,fff
 LICENSE := Licence,fff
+CONFAPP := !WinKeys
 
 
 # Set up the source files.
@@ -149,7 +150,7 @@ $(OUTDIR)/$(README): $(MANUAL)/$(MANSRC)
 
 release: clean all
 	$(RM) ../$(ZIPFILE)
-	(cd $(OUTDIR) ; $(ZIP) $(ZIPFLAGS) ../../$(ZIPFILE) $(RUNIMAGE) $(README) $(LICENSE))
+	(cd $(OUTDIR) ; $(ZIP) $(ZIPFLAGS) ../../$(ZIPFILE) $(CONFAPP) $(RUNIMAGE) $(README) $(LICENSE))
 	$(RM) ../$(SRCZIPFILE)
 	$(ZIP) $(SRCZIPFLAGS) ../$(SRCZIPFILE) $(OUTDIR) $(SRCDIR) $(MANUAL) Makefile
 
