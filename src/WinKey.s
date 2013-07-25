@@ -26,9 +26,6 @@
 ;
 ; REM 26/32 bit neutral
 
-;version$="0.21"
-;save_as$="WinKeys"
-
 	GET	$Include/SWINames
 
 ; ---------------------------------------------------------------------------------------------------------------------
@@ -80,7 +77,7 @@ TitleString
 	ALIGN
 
 HelpString
-	DCB	"Windows Keys",9,$BuildVersion," (",$BuildDate,") ",169," Stephen Fryatt, 2001",0 ;-",$BuildDate:RIGHT:4,0
+	DCB	"Windows Keys",9,$BuildVersion," (",$BuildDate,") ",169," Stephen Fryatt, 2001-",$BuildDate:RIGHT:4,0
 	ALIGN
 
 ; ======================================================================================================================
@@ -215,7 +212,7 @@ TaskName
 	DCB	"Windows Keys",0
 
 MisusedStartCommand
-	DCDU	0				; \TODO -- Remove U
+	DCD	0
 	DCB	"Use *Desktop to start WinKeys.",0
 	ALIGN
 
