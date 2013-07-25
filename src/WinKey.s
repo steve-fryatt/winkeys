@@ -97,12 +97,29 @@ CommandTable
 CommandDesktop
 	STMFD	R13!,{R14}
 
+	; Exit with V set if Desktop_PCKeys is used manually.
+
+	LDR	R14,[R12,#WS_TaskHandle]
+	CMN	R14,#1
+	ADRNE	R0,DesktopMisused
+	MSRNE	CPSR_f, #9 << 28
+	LDMNEFD	R13!,{PC}
+
+	; Pass *Desktop_PCKeys to OS_Module.
+
 	MOV	R2,R0
 	ADR	R1,TitleString
 	MOV	R0,#2
 	SWI	XOS_Module
 
 	LDMFD	R13!,{PC}
+
+; ----------------------------------------------------------------------------------------------------------------------
+
+DesktopMisused
+	DCD	0
+	DCB	"Use *Desktop to start WinKeys.",0
+	ALIGN
 
 ; ======================================================================================================================
 
@@ -181,7 +198,7 @@ ServiceStartWimp
 
 	LDR	R14,[R12,#WS_TaskHandle]
 	TEQ	R14,#0
-	MOVEQ	R14,#:NOT:-1			; Should be MVNEQ R14,#NOT-1?
+	MOVEQ	R14,#-1
 	STREQ	R14,[R12,#WS_TaskHandle]
 	ADREQ	R0,CommandDesktop
 	MOVEQ	R1,#0
@@ -210,10 +227,6 @@ PollMask
 
 TaskName
 	DCB	"Windows Keys",0
-
-MisusedStartCommand
-	DCD	0
-	DCB	"Use *Desktop to start WinKeys.",0
 	ALIGN
 
 WindowDefinition
@@ -246,13 +259,6 @@ TaskCode
 	LDR	R12,[R12]
 	ADD	R13,R12,#WS_Size			; Set the stack up.
 	ADD	R13,R13,#4
-
-; Check that we aren't in the desktop.
-
-	SWI	XWimp_ReadSysInfo
-	TEQ	R0,#0
-	ADREQ	R0,MisusedStartCommand
-	SWIEQ	OS_GenerateError
 
 ; Kill any previous version of our task which may be running.
 
