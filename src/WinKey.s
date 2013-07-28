@@ -112,7 +112,7 @@ CommandDesktopError
 	MSR	CPSR_f, #9 << 28
 	LDMFD	R13!,{PC}
 
-	; Pass *Desktop_PCKeys to OS_Module.
+	; Pass *Desktop_WinKeys to OS_Module.
 
 CommandDesktopOK
 	MOV	R2,R0
