@@ -64,15 +64,15 @@ MKDIR := mkdir
 RM := rm -rf
 CP := cp
 
-ZIP := /home/steve/GCCSDK/env/bin/zip
+ZIP := $(GCCSDK_INSTALL_ENV)/bin/zip
 
-SFBIN := /home/steve/GCCSDK/sfbin
+LIBPATHS := BASIC:$(SFTOOLS_BASIC)/
 
-MANTOOLS := $(SFBIN)/mantools
-BINDHELP := $(SFBIN)/bindhelp
-TEXTMERGE := $(SFBIN)/textmerge
-MENUGEN := $(SFBIN)/menugen
-
+MANTOOLS := $(SFTOOLS_BIN)/mantools
+BINDHELP := $(SFTOOLS_BIN)/bindhelp
+TEXTMERGE := $(SFTOOLS_BIN)/textmerge
+MENUGEN := $(SFTOOLS_BIN)/menugen
+TOKENIZE := $(SFTOOLS_BIN)/tokenize
 
 # Build Flags
 
@@ -82,7 +82,7 @@ ZIPFLAGS := -x "*/.svn/*" -r -, -9
 SRCZIPFLAGS := -x "*/.svn/*" -r -9
 BUZIPFLAGS := -x "*/.svn/*" -r -9
 BINDHELPFLAGS := -f -r -v
-
+TOKFLAGS := -verbose -crunch EIrW
 
 # Set up the various build directories.
 
@@ -94,10 +94,11 @@ OUTDIR := build
 
 # Set up the named target files.
 
-RUNIMAGE := WinKeys,ffa
+MODULE := WinKeys,ffa
 README := ReadMe,fff
 LICENSE := Licence,fff
 CONFAPP := !WinKeys
+RUNIMAGE := !RunImage,ffb
 
 
 # Set up the source files.
@@ -108,6 +109,8 @@ READMEHDR := Header
 
 OBJS := WinKey.o
 
+SRCS := Plugin.bbt
+
 # Build everything, but don't package it for release.
 
 all: application documentation
@@ -115,15 +118,21 @@ all: application documentation
 
 # Build the application and its supporting binary files.
 
-application: $(OUTDIR)/$(RUNIMAGE)
+application: $(OUTDIR)/$(MODULE) $(OUTDIR)/$(CONFAPP)/$(RUNIMAGE)
 
-
-# Build the complete !RunImage from the object files.
+# Build the complete module from the object files.
 
 OBJS := $(addprefix $(OBJDIR)/, $(OBJS))
 
-$(OUTDIR)/$(RUNIMAGE): $(OBJS) $(OBJDIR)
-	$(STRIP) $(STRIPFLAGS) -o $(OUTDIR)/$(RUNIMAGE) $(OBJS)
+$(OUTDIR)/$(MODULE): $(OBJS) $(OBJDIR)
+	$(STRIP) $(STRIPFLAGS) -o $(OUTDIR)/$(MODULE) $(OBJS)
+
+# Build the configure plugin application from the source files.
+
+SRCS := $(addprefix $(SRCDIR)/, $(SRCS))
+
+$(OUTDIR)/$(CONFAPP)/$(RUNIMAGE): $(SRCS)
+	$(TOKENIZE) $(TOKFLAGS) $(firstword $(SRCS)) -link -out $(OUTDIR)/$(CONFAPP)/$(RUNIMAGE) -path $(LIBPATHS) -define 'build_date$$=$(BUILD_DATE)' -define 'build_version$$=$(VERSION)'
 
 # Create a folder to hold the object files.
 
@@ -147,7 +156,7 @@ $(OUTDIR)/$(README): $(MANUAL)/$(MANSRC)
 
 release: clean all
 	$(RM) ../$(ZIPFILE)
-	(cd $(OUTDIR) ; $(ZIP) $(ZIPFLAGS) ../../$(ZIPFILE) $(CONFAPP) $(RUNIMAGE) $(README) $(LICENSE))
+	(cd $(OUTDIR) ; $(ZIP) $(ZIPFLAGS) ../../$(ZIPFILE) $(CONFAPP) $(MODULE) $(README) $(LICENSE))
 	$(RM) ../$(SRCZIPFILE)
 	$(ZIP) $(SRCZIPFLAGS) ../$(SRCZIPFILE) $(OUTDIR) $(SRCDIR) $(MANUAL) Makefile
 
@@ -163,6 +172,7 @@ backup:
 
 clean:
 	$(RM) $(OBJDIR)/*
-	$(RM) $(OUTDIR)/$(RUNIMAGE)
+	$(RM) $(OUTDIR)/$(MODULE)
 	$(RM) $(OUTDIR)/$(README)
+	$(RM) $(OUTDIR)/$(CONFAPP)/$(RUNIMAGE)
 
