@@ -26,40 +26,127 @@ REM
 REM Version 0.21
 REM 15 December 2002
 
-ONERRORVDU4:PRINTREPORT$;" at line ";ERL:END
-PROCL:ONERRORJ%=(FNF(J$)=2)
-WHILENOTJ%:PROCN:ENDWHILE:PROCU:END
-DEFPROCN:SYS&400C7,&3831,Z%TOz%:CASEz%OF
-WHEN2:SYS&400C5,,Z%
-WHEN3:SYS&400C6,,Z%
-WHEN6:PROCJ
-WHEN8:PROCQ
-WHEN17,18:PROCP
-ENDCASE:ENDPROC
-DEFPROCJ:IFZ%!&C=M%THEN
-CASEZ%!16OF
-WHEN0:PROCM:IFZ%!8=4THENJ%=TRUE
-WHEN1:IFZ%!8=4THENJ%=TRUEELSEPROCF:PROCZ
-WHEN2:IFZ%!8=4THENPROCV:PROCZ
+ON ERROR VDU 4 : PRINT REPORT$;" at line ";ERL : END
+:
+PROCinitialise
+:
+ON ERROR quit%=(FNF(J$)=2)
+:
+WHILE NOT quit%
+ PROCpoll
+ENDWHILE
+:
+PROCterminate
+:
+END
+:
+:
+:
+:
+REM
+:
+:
+:
+:
+DEF PROCpoll
+SYS "Wimp_Poll",&3831,Z% TO reason%
+
+CASE reason% OF
+ WHEN 2     : SYS "Wimp_OpenWindow",,Z%
+ WHEN 3     : SYS "Wimp_CloseWindow",,Z%
+ WHEN 6     : PROCmouse_click
+ WHEN 8     : PROCkey_press
+ WHEN 17,18 : PROCwimp_message
 ENDCASE
-ENDIF:ENDPROC
-DEFPROCQ:CASEZ%!24OF
-WHEN&D:PROCM:J%=TRUE
-WHEN27:J%=TRUE
-OTHERWISESYS&400DC,Z%!24
-ENDCASE:ENDPROC
-DEFPROCP:CASEZ%!16OF
-WHEN0:J%=TRUE
-WHEN3:PROCW(Z%!24,FNS(Z%+44),Z%!40)
-WHEN&502:PROCG
-WHEN&50D83:PROCC(M%)
-ENDCASE:ENDPROC
-DEFPROCL:LOCALb%,Y%:DIMN%16:SYS&41500,,"<WinKeys$Dir>.Messages"TOv%,,e%:DIMf%e%:SYS&41501,N%,"<WinKeys$Dir>.Messages",f%:DIMZ%&FA0,A%&FF,V%&FF:$Z%="TASK":A=!Z%:J$=FNZ("_TaskName"):Y%=310:!A%=&50D83:A%!4=&502:A%!8=3:A%!&C=0:SYS&400C0,Y%,A,J$,A%TOb%,s%:J%=FALSE:X%=&BB8:DIMr%X%
+ENDPROC
+:
+:
+:
+:
+REM
+:
+:
+:
+:
+DEF PROCmouse_click
+IF Z%!12 = M% THEN
+ CASE Z%!16 OF
+  WHEN 0 : PROCM
+           IF Z%!8=4 THEN quit%=TRUE
+  WHEN 1 : IF Z%!8=4 THEN quit%=TRUE ELSE PROCF : PROCZ
+  WHEN 2 : IF Z%!8=4 THEN PROCV : PROCZ
+ ENDCASE
+ENDIF
+ENDPROC
+:
+:
+:
+:
+REM
+:
+:
+:
+:
+DEF PROCkey_press
+CASE Z%!24 OF
+ WHEN 13   : PROCM : quit%=TRUE
+ WHEN 27   : quit%=TRUE
+ OTHERWISE : SYS "Wimp_ProcessKey",Z%!24
+ENDCASE
+ENDPROC
+:
+:
+:
+:
+REM
+:
+:
+:
+:
+DEF PROCwimp_message
+CASE Z%!16 OF
+ WHEN 0      : quit%=TRUE
+ WHEN 3      : PROCW(Z%!24,FNS(Z%+44),Z%!40)
+ WHEN &502   : PROCG
+ WHEN &50D83 : PROCC(M%)
+ENDCASE
+ENDPROC
+:
+:
+:
+:
+REM
+:
+:
+:
+:
+DEF PROCinitialise
+:
+LOCAL b%,Y%
+:
+DIMN%16:SYS&41500,,"<WinKeys$Dir>.Messages"TOv%,,e%:DIMf%e%:SYS&41501,N%,"<WinKeys$Dir>.Messages",f%:DIMZ%&FA0,A%&FF,V%&FF:$Z%="TASK":A=!Z%:J$=FNZ("_TaskName"):Y%=310:!A%=&50D83:A%!4=&502:A%!8=3:A%!&C=0:SYS&400C0,Y%,A,J$,A%TOb%,s%:quit%=FALSE:X%=&BB8:DIMr%X%
 PROCX("<WinKeys$Dir>.Templates"):PROCD("Setup",Z%,r%,X%,-1):SYS&400C1,,Z%TOM%:PROCH:DIMA$(7),A%(7):A$()="Win","ShiftWin","CtrlWin","ShiftCtrlWin","Menu","ShiftMenu","CtrlMenu","ShiftCtrlMenu":A%()=5,7,9,&B,&E,16,18,20:PROCF:SYS16TOS$:T%=INSTR(S$,"-openat"):IFT%>0THEN
 W%=INSTR(S$," ",T%):U%=INSTR(S$," ",W%+1):x%=VAL(MID$(S$,W%+1,INSTR(S$," ",W%+1)-W%)):w%=VAL(MID$(S$,U%+1,INSTR(S$," ",U%+1)-U%)):PROCB(M%,x%,w%)
 ELSE:PROCC(M%)
-ENDIF:PROCA(M%,A%(0)):ENDPROC
-DEFPROCU:SYS&400DD,s%,A:ENDPROC
+ENDIF:PROCA(M%,A%(0))
+ENDPROC
+:
+:
+:
+:
+REM
+:
+:
+:
+:
+DEF PROCterminate
+:
+SYS "Wimp_CloseDown",s%,A
+ENDPROC
+
+
+
+
 DEFPROCF:LOCALS%:FORS%=0TO7:SYS&20023,"WinKeys$"+A$(S%),Z%,&FA0,0,0TO,,Q%:Z%?Q%=&D:$FNA(M%,A%(S%))=$Z%:NEXT:ENDPROC
 DEFPROCM:LOCALS%,C$,L%,F$,C%,_%:F$="<Choices$Write>.WinKeys":SYS8,17,F$TO_%:IF_%=0THENSYS8,8,F$,,,0
 F$+=".SetKeys":C%=OPENOUT(F$):IFC%<>0THEN
