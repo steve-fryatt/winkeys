@@ -124,36 +124,35 @@ REM
 :
 DEF PROCinitialise
 :
-LOCAL wimp_version%,wimp_required%
+LOCAL wimp_version%, wimp_required%, flags%, size%
 :
-DIM N% 16
+REM Load the application's message file.
 :
-SYS "MessageTrans_FileInfo",,"<WinKeys$Dir>.Messages" TO v%,,e%
-:
-DIM f% e%
-:
-SYS "MessageTrans_OpenFile",N%,"<WinKeys$Dir>.Messages",f%
+DIM message_file% 16
+SYS "MessageTrans_FileInfo",,"<WinKeys$Dir>.Messages" TO flags%,,size%
+DIM f% size%
+SYS "MessageTrans_OpenFile",message_file%,"<WinKeys$Dir>.Messages",f%
 :
 DIM b% &4000, q% 255, a% 255
 :
 $b%="TASK"
-:
 TASK=!b%
 :
 task_name$=FNmessage_lookup("_TaskName")
-:
 wimp_required%=310
 :
-!q%=&50D83
-q%!4=&502
-q%!8=3
-q%!&C=0
+REM Identify which Wimp Messages we wish to claim.
+:
+q%!0=&50D83 : REM Message_OpenConfigWindow
+q%!4=&502   : REM Message_HelpRequest
+q%!8=3      : REM Message_DataLoad
+q%!&C=0     : REM Message_Quit
 :
 SYS "Wimp_Initialise",wimp_required%,TASK,task_name$,q% TO wimp_version%,task_handle%
 :
 quit%=FALSE
 :
-indirection_size%=&BB8
+indirection_size%=3000
 DIM indirection_data% indirection_size%
 :
 PROCload_template("<WinKeys$Dir>.Templates")
@@ -168,14 +167,14 @@ key_icon%()=5,7,9,11,14,16,18,20
 :
 PROCfill_window
 :
-SYS "OS_GetEnv" TO S$
-T%=INSTR(S$,"-openat")
-IF T%>0 THEN
- W%=INSTR(S$," ",T%)
- U%=INSTR(S$," ",W%+1)
- x%=VAL(MID$(S$,W%+1,INSTR(S$," ",W%+1)-W%))
- w%=VAL(MID$(S$,U%+1,INSTR(S$," ",U%+1)-U%))
- PROCopen_window_at(settings_window%,x%,w%)
+SYS "OS_GetEnv" TO command_line$
+inset%=INSTR(command_line$,"-openat")
+IF inset%>0 THEN
+ inset_x%=INSTR(command_line$," ",inset%)
+ inset_y%=INSTR(command_line$," ",inset_x%+1)
+ x%=VAL(MID$(command_line$,inset_x%+1,INSTR(command_line$," ",inset_x%+1)-inset_x%))
+ y%=VAL(MID$(command_line$,inset_y%+1,INSTR(command_line$," ",inset_y%+1)-inset_y%))
+ PROCopen_window_at(settings_window%,x%,y%)
 ELSE
  PROCopen_window(settings_window%)
 ENDIF
@@ -208,7 +207,7 @@ DEF PROCfill_window
 LOCAL loop%
 :
 FOR loop%=0 TO 7
- SYS "XOS_ReadVarVal","WinKeys$"+key_name$(loop%),b%,&FA0,0,0 TO ,,length%
+ SYS "XOS_ReadVarVal","WinKeys$"+key_name$(loop%),b%,4000,0,0 TO ,,length%
  b%?length%=13
  $FNicon_indirection(settings_window%,key_icon%(loop%))=$b%
 NEXT loop%
@@ -344,28 +343,28 @@ REM
 :
 DEF PROCsend_interactive_help
 :
-LOCAL A$,Z$,length%
+LOCAL help_token$,key_token$,length%
 :
-A$=""
-Z$=""
+help_token$=""
+key_token$=""
 :
 IF b%!32=settings_window% THEN
  CASE b%!36 OF
-  WHEN 0,1,2 : A$="Help0"+STR$(b%!36)
-  WHEN 5     : A$="HelpKey" : Z$="KeyW"
-  WHEN 7     : A$="HelpKey" : Z$="KeySW"
-  WHEN 9     : A$="HelpKey" : Z$="KeyCW"
-  WHEN 11    : A$="HelpKey" : Z$="KeySCW"
-  WHEN 14    : A$="HelpKey" : Z$="KeyM"
-  WHEN 16    : A$="HelpKey" : Z$="KeySM"
-  WHEN 18    : A$="HelpKey" : Z$="KeyCM"
-  WHEN 20    : A$="HelpKey" : Z$="KeySCM"
+  WHEN 0,1,2 : help_token$="Help0"+STR$(b%!36)
+  WHEN 5     : help_token$="HelpKey" : key_token$="KeyW"
+  WHEN 7     : help_token$="HelpKey" : key_token$="KeySW"
+  WHEN 9     : help_token$="HelpKey" : key_token$="KeyCW"
+  WHEN 11    : help_token$="HelpKey" : key_token$="KeySCW"
+  WHEN 14    : help_token$="HelpKey" : key_token$="KeyM"
+  WHEN 16    : help_token$="HelpKey" : key_token$="KeySM"
+  WHEN 18    : help_token$="HelpKey" : key_token$="KeyCM"
+  WHEN 20    : help_token$="HelpKey" : key_token$="KeySCM"
  ENDCASE
 ENDIF
 :
-IF A$<>"" THEN
- IF Z$<>"" THEN SYS "MessageTrans_Lookup",N%,Z$,q%,&FF ELSE $q%=""
- SYS "MessageTrans_Lookup",N%,A$,b%+20,235,q% TO,,,length%
+IF help_token$<>"" THEN
+ IF key_token$<>"" THEN SYS "MessageTrans_Lookup",message_file%,key_token$,q%,&FF ELSE $q%=""
+ SYS "MessageTrans_Lookup",message_file%,help_token$,b%+20,235,q% TO,,,length%
  b%!12=b%!8
  b%!16=&503
  !b%=24+(length%AND&FFFFFC)
@@ -385,6 +384,6 @@ DEF FNmessage_lookup(token$)
 :
 LOCAL message$
 :
-IF token$<>"" THEN SYS "MessageTrans_Lookup",N%,token$ TO ,,message$
+IF token$<>"" THEN SYS "MessageTrans_Lookup",message_file%,token$ TO ,,message$
 =message$
 
