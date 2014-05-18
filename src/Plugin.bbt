@@ -1,5 +1,7 @@
 REM >!RunImage
 REM
+REM Copyright 2001-2014, Stephen Fryatt (info@stevefryatt.org.uk)
+REM
 REM This file is part of WinKeys:
 REM
 REM   http://www.stevefryatt.org.uk/software/
@@ -19,12 +21,8 @@ REM OR CONDITIONS OF ANY KIND, either express or implied.
 REM
 REM See the Licence for the specific language governing
 REM permissions and limitations under the Licence.
-
+:
 REM Windows Keys Setup
-REM (C) Stephen Fryatt, 2001
-REM
-REM Version 0.21
-REM 15 December 2002
 :
 LIBRARY "BASIC:WimpLib"
 :
