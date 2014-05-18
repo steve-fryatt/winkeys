@@ -165,6 +165,8 @@ Public Beta release.
 
 <subhead title="Test Build">
 
+Development release for testing and feedback.
+
 <list>
 <li>Converted plugin code into Tokenize format and restored un-crunched version.
 </list>
