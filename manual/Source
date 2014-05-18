@@ -41,9 +41,9 @@ The necessary libraries and build tools can be found at <link ref="#url http://w
 
 <chapter title="Introduction" file="Introduction">
 
-<cite>Windows&nbsp;Keys</cite> is a utility to make it easier to use the <cite>MS&nbsp;Windows</cite> specific keys under RISC&nbsp;OS&nbsp;4.  Although the new OS recognises the keys, there is no easy way to use them.  Some applications, such as <cite>Zap</cite>, will support them but in general there is no easy way to get them to do anything.
+<cite>Windows&nbsp;Keys</cite> is a utility to make it easier to use the <cite>MS&nbsp;Windows</cite> specific keys under RISC&nbsp;OS&nbsp;4. Although the new OS recognises the keys, there is no easy way to use them. Some applications, such as <cite>Zap</cite>, will support them but in general there is no easy way to get them to do anything.
 
-<cite>Windows&nbsp;Keys</cite> allows star commands to be attached to the <key>windows</key> and <key>menu</key> keys, for all of the <key>shift</key> and <key>ctrl</key> combinations.  These cam be used to launch applications, open directories or almost anything else.
+<cite>Windows&nbsp;Keys</cite> allows star commands to be attached to the <key>windows</key> and <key>menu</key> keys, for all of the <key>shift</key> and <key>ctrl</key> combinations. These cam be used to launch applications, open directories or almost anything else.
 
 </chapter>
 
@@ -53,11 +53,11 @@ The necessary libraries and build tools can be found at <link ref="#url http://w
 
 <chapter title="Installation" file="Install">
 
-<cite>Windows&nbsp;Keys</cite> requires RISC&nbsp;OS&nbsp;4 or later.  It is 26/32 bit neutral and should be compatible with RISC&nbsp;OS&nbsp;5 &ndash; although note that this version of the OS already contains very similar functionality as standard.
+<cite>Windows&nbsp;Keys</cite> requires RISC&nbsp;OS&nbsp;4 or later. It is 26/32 bit neutral and should be compatible with RISC&nbsp;OS&nbsp;5 &ndash; although note that this version of the OS already contains very similar functionality as standard.
 
-To install <cite>Windows&nbsp;Keys</cite>, copy the <file>WinKeys</file> module to a suitable place and double-click on it to run.  If you want it to run on startup, the module should be placed in your boot sequence: this can be done by copying it into the <file>Choices:Boot.Tasks</file> directory or including it in the Run list in Select&rsquo;s <cite>Configure</cite> application.
+To install <cite>Windows&nbsp;Keys</cite>, copy the <file>WinKeys</file> module to a suitable place and double-click on it to run. If you want it to run on startup, the module should be placed in your boot sequence: this can be done by copying it into the <file>Choices:Boot.Tasks</file> directory or including it in the Run list in Select&rsquo;s <cite>Configure</cite> application.
 
-The <file>!WinKeys</file> application allows the key combinations to be easily configured.  It can be run on its own, but is intended to be used as a plugin to <cite>Configure</cite>.  To install as such, copy it into the <file>!Boot.ROxxxHook.Res.Configure</file> directory for your version of RISC&nbsp;OS; there will now be a <icon>WinKeys</icon> option in the main <cite>Configure</cite> window, although the machine may need to be re-booted for all the icons to appear correctly.
+The <file>!WinKeys</file> application allows the key combinations to be easily configured. It can be run on its own, but is intended to be used as a plugin to <cite>Configure</cite>. To install as such, copy it into the <file>!Boot.ROxxxHook.Res.Configure</file> directory for your version of RISC&nbsp;OS; there will now be a <icon>WinKeys</icon> option in the main <cite>Configure</cite> window, although the machine may need to be re-booted for all the icons to appear correctly.
 
 </chapter>
 
@@ -66,13 +66,13 @@ The <file>!WinKeys</file> application allows the key combinations to be easily c
 
 <chapter title="Setting Up the Keys" file="Configure">
 
-To set the keys, click on the <icon>WinKeys</icon> option in <cite>Configure</cite> (or double click on <file>!WinKeys</file> in a directory viewer if you don&rsquo;t wish to add the plugin). This will open a window with a section for the <key>windows</key> and <key>menu</key> keys.  Each has a line for every possible combination of <key>shift</key> and <key>ctrl</key> (the first, unmarked, line is for the key on its own): star commands can be entered into these, to be executed when that key combination is pressed.
+To set the keys, click on the <icon>WinKeys</icon> option in <cite>Configure</cite> (or double click on <file>!WinKeys</file> in a directory viewer if you don&rsquo;t wish to add the plugin). This will open a window with a section for the <key>windows</key> and <key>menu</key> keys. Each has a line for every possible combination of <key>shift</key> and <key>ctrl</key> (the first, unmarked, line is for the key on its own): star commands can be entered into these, to be executed when that key combination is pressed.
 
-Almost any star command can be used, although there are some problems. <command>*Filer_Run</command> can be a problem when used with key combinations involving <key>shift</key>.  To run applications, the new RISC&nbsp;OS&nbsp;4 command <command>*StartDesktopTask</command> is more reliable and will not cause things to be loaded into a text editor by mistake.  Watch out for applications that use <command>*Filer_Run</command> in their <file>!Run</file> files (<cite>Oregano</cite> is an example, as it calls <cite>BookMaker</cite> and &ndash; if installed &ndash; <cite>Cassia</cite>): these may need such calls changing if they are to work correctly.
+Almost any star command can be used, although there are some problems. <command>*Filer_Run</command> can be a problem when used with key combinations involving <key>shift</key>. To run applications, the new RISC&nbsp;OS&nbsp;4 command <command>*StartDesktopTask</command> is more reliable and will not cause things to be loaded into a text editor by mistake. Watch out for applications that use <command>*Filer_Run</command> in their <file>!Run</file> files (<cite>Oregano</cite> is an example, as it calls <cite>BookMaker</cite> and &ndash; if installed &ndash; <cite>Cassia</cite>): these may need such calls changing if they are to work correctly.
 
-Dragging objects into the fields will enter the paths automatically.  If an application is dragged in the field will be cleared and the correct <command>*StartDesktopTask</command> command will be entered.  If a directory is dragged in, the field will also be cleared and the correct <command>*Filer_OpenDir</command> command will be entered.  For all other objects, the path of the object will be entered at the caret (or at the end of the field if the caret isn&rsquo;t present).
+Dragging objects into the fields will enter the paths automatically. If an application is dragged in the field will be cleared and the correct <command>*StartDesktopTask</command> command will be entered. If a directory is dragged in, the field will also be cleared and the correct <command>*Filer_OpenDir</command> command will be entered. For all other objects, the path of the object will be entered at the caret (or at the end of the field if the caret isn&rsquo;t present).
 
-The various commands are stored in system variables that can be set by hand if required.  These variables are:
+The various commands are stored in system variables that can be set by hand if required. These variables are:
 
 <list>
 <li>&lt;WinKeys$Win&gt;
@@ -85,7 +85,7 @@ The various commands are stored in system variables that can be set by hand if r
 <li>&lt;WinKeys$ShiftCtrlMenu&gt;
 </list>
 
-When run, the <cite>WinKeys</cite> module will look for an Obey file in the directory <file>Choices:WinKeys.SetKeys</file> and run it if it is present.  This file should contain lines to set the variables above as required; the configure utility will automatically create this file when the <icon>Set</icon> button is pressed.
+When run, the <cite>WinKeys</cite> module will look for an Obey file in the directory <file>Choices:WinKeys.SetKeys</file> and run it if it is present. This file should contain lines to set the variables above as required; the configure utility will automatically create this file when the <icon>Set</icon> button is pressed.
 
 An example file might look something like this:
 
@@ -160,7 +160,14 @@ Public Beta release.
 <list>
 <li>Restructured module code into ObjAsm format.
 <li>Fixed task start code.
-</li>
+</list>
+
+
+<subhead title="Test Build">
+
+<list>
+<li>Converted plugin code into Tokenize format and restored un-crunched version.
+</list>
 
 </chapter>
 
