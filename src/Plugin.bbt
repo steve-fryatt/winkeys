@@ -25,6 +25,7 @@ REM permissions and limitations under the Licence.
 REM Windows Keys Setup
 :
 LIBRARY "BASIC:WimpLib"
+LIBRARY "BASIC:Window"
 :
 ON ERROR VDU 4 : PRINT REPORT$;" at line ";ERL : END
 :
@@ -108,7 +109,7 @@ CASE b%!16 OF
  WHEN 0      : quit%=TRUE
  WHEN 3      : PROCmessage_dataload(b%!24,FNzero_string(b%+44),b%!40)
  WHEN &502   : PROCsend_interactive_help
- WHEN &50D83 : PROCopen_window(settings_window%)
+ WHEN &50D83 : PROCwindow_open(settings_window%)
 ENDCASE
 ENDPROC
 :
@@ -174,7 +175,7 @@ IF inset%>0 THEN
  y%=VAL(MID$(command_line$,inset_y%+1,INSTR(command_line$," ",inset_y%+1)-inset_y%))
  PROCopen_window_at(settings_window%,x%,y%)
 ELSE
- PROCopen_window(settings_window%)
+ PROCwindow_open(settings_window%)
 ENDIF
 PROCput_caret_at_end(settings_window%,key_icon%(0))
 ENDPROC
