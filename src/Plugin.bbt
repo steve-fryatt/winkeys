@@ -25,6 +25,7 @@ REM permissions and limitations under the Licence.
 REM Windows Keys Setup
 :
 LIBRARY "BASIC:WimpLib"
+LIBRARY "BASIC:Icon"
 LIBRARY "BASIC:Window"
 :
 ON ERROR VDU 4 : PRINT REPORT$;" at line ";ERL : END
@@ -283,7 +284,7 @@ DEF PROCredraw_window
 LOCAL loop%
 :
 FOR loop%=0 TO 7
- PROCforce_icon_redraw(settings_window%,key_icon%(loop%))
+ PROCicon_redraw(settings_window%,key_icon%(loop%))
 NEXT loop%
 :
 SYS "Wimp_GetCaretPosition",,q%
@@ -324,7 +325,7 @@ IF found% THEN
  ENDCASE
  :
  $FNicon_indirection(settings_window%,icon%)=LEFT$(filename$,&FE)
- PROCforce_icon_redraw(settings_window%,icon%)
+ PROCicon_redraw(settings_window%,icon%)
  IF FNis_caret_in_icon(settings_window%,icon%) THEN
   IF position%=-1 THEN position%=LEN($FNicon_indirection(settings_window%,icon%))
   SYS "Wimp_SetCaretPosition",settings_window%,icon%,,,-1,position%
