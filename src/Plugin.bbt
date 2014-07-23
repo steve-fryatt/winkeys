@@ -26,6 +26,7 @@ REM Windows Keys Setup
 :
 LIBRARY "BASIC:WimpLib"
 LIBRARY "BASIC:Icon"
+LIBRARY "BASIC:String"
 LIBRARY "BASIC:Window"
 :
 ON ERROR VDU 4 : PRINT REPORT$;" at line ";ERL : END
@@ -108,7 +109,7 @@ REM
 DEF PROCwimp_message
 CASE b%!16 OF
  WHEN 0      : quit%=TRUE
- WHEN 3      : PROCmessage_dataload(b%!24,FNzero_string(b%+44),b%!40)
+ WHEN 3      : PROCmessage_dataload(b%!24,FNstring_read((b%+44),b%!40)
  WHEN &502   : PROCsend_interactive_help
  WHEN &50D83 : PROCwindow_open(settings_window%)
 ENDCASE
