@@ -27,6 +27,7 @@ REM Windows Keys Setup
 LIBRARY "BASIC:WimpLib"
 LIBRARY "BASIC:Icon"
 LIBRARY "BASIC:String"
+LIBRARY "BASIC:Template"
 LIBRARY "BASIC:Window"
 :
 ON ERROR VDU 4 : PRINT REPORT$;" at line ";ERL : END
@@ -156,10 +157,10 @@ quit%=FALSE
 indirection_size%=3000
 DIM indirection_data% indirection_size%
 :
-PROCload_template("<WinKeys$Dir>.Templates")
-PROCload_template("Setup",b%,indirection_data%,indirection_size%,-1)
+PROCtemplate_open("<WinKeys$Dir>.Templates")
+PROCtemplate_load("Setup",b%,indirection_data%,indirection_size%,-1)
 SYS "Wimp_CreateWindow",,b% TO settings_window%
-PROCclose_templates
+PROCtemplate_close
 :
 DIM key_name$(7), key_icon%(7)
 :
@@ -179,7 +180,7 @@ IF inset%>0 THEN
 ELSE
  PROCwindow_open(settings_window%)
 ENDIF
-PROCput_caret_at_end(settings_window%,key_icon%(0))
+PROCicon_put_caret_at_end(settings_window%,key_icon%(0))
 ENDPROC
 :
 :
@@ -289,7 +290,7 @@ FOR loop%=0 TO 7
 NEXT loop%
 :
 SYS "Wimp_GetCaretPosition",,q%
-IF !q%=settings_window% THEN PROCput_caret_at_end(settings_window%,q%!4)
+IF !q%=settings_window% THEN PROCicon_put_caret_at_end(settings_window%,q%!4)
 ENDPROC
 :
 :
@@ -327,7 +328,7 @@ IF found% THEN
  :
  $FNicon_indirection(settings_window%,icon%)=LEFT$(filename$,&FE)
  PROCicon_redraw(settings_window%,icon%)
- IF FNis_caret_in_icon(settings_window%,icon%) THEN
+ IF FNicon_test_for_caret(settings_window%,icon%) THEN
   IF position%=-1 THEN position%=LEN($FNicon_indirection(settings_window%,icon%))
   SYS "Wimp_SetCaretPosition",settings_window%,icon%,,,-1,position%
  ENDIF
