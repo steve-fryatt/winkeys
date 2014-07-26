@@ -28,13 +28,15 @@ LIBRARY "BASIC:WimpLib"
 LIBRARY "BASIC:Icon"
 LIBRARY "BASIC:String"
 LIBRARY "BASIC:Template"
+LIBRARY "BASIC:WimpError"
 LIBRARY "BASIC:Window"
 :
-ON ERROR VDU 4 : PRINT REPORT$;" at line ";ERL : END
+PROCwimperror_initialise("WinKeys", "!winkeys")
+ON ERROR ON ERROR result% = FNwimperror_program : END
 :
 PROCinitialise
 :
-ON ERROR quit%=(FNerror(task_name$)=2)
+ON ERROR quit% = FNwimperror_program
 :
 WHILE NOT quit%
  PROCpoll
@@ -181,6 +183,8 @@ ELSE
  PROCwindow_open(settings_window%)
 ENDIF
 PROCicon_put_caret_at_end(settings_window%,key_icon%(0))
+
+PROCwimperror_initialise(task_name$, "!winkeys")
 ENDPROC
 :
 :
