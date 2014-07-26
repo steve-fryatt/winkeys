@@ -24,7 +24,6 @@ REM permissions and limitations under the Licence.
 :
 REM Windows Keys Setup
 :
-LIBRARY "BASIC:WimpLib"
 LIBRARY "BASIC:Icon"
 LIBRARY "BASIC:String"
 LIBRARY "BASIC:Template"
