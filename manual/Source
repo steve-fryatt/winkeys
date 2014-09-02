@@ -163,12 +163,11 @@ Public Beta release.
 </list>
 
 
-<subhead title="Test Build">
-
-Development release for testing and feedback.
+<subhead title="0.23 (2 September 2014)">
 
 <list>
 <li>Converted plugin code into Tokenize format and restored un-crunched version.
+<li>Updated library dependencies to new WimpLib code.
 </list>
 
 </chapter>
