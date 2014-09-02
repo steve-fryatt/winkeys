@@ -177,7 +177,7 @@ IF inset%>0 THEN
  inset_y%=INSTR(command_line$," ",inset_x%+1)
  x%=VAL(MID$(command_line$,inset_x%+1,INSTR(command_line$," ",inset_x%+1)-inset_x%))
  y%=VAL(MID$(command_line$,inset_y%+1,INSTR(command_line$," ",inset_y%+1)-inset_y%))
- PROCopen_window_at(settings_window%,x%,y%)
+ PROCwindow_open_at(settings_window%,x%,y%)
 ELSE
  PROCwindow_open(settings_window%)
 ENDIF
