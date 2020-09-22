@@ -1,4 +1,4 @@
-; Copyright 2001-2013, Stephen Fryatt (info@stevefryatt.org.uk)
+; Copyright 2001-2020, Stephen Fryatt (info@stevefryatt.org.uk)
 ;
 ; This file is part of WinKeys:
 ;
@@ -73,7 +73,7 @@ ModuleFlags
 ; ======================================================================================================================
 
 TitleString
-	DCB	"WindowsKeys",0
+	DCB	"WinKeys",0
 	ALIGN
 
 HelpString
@@ -83,7 +83,7 @@ HelpString
 ; ======================================================================================================================
 
 CommandTable
-	DCB	"Desktop_WindowsKeys",0
+	DCB	"Desktop_WinKeys",0
 	ALIGN
 	DCD	CommandDesktop
 	DCD	&00000000
@@ -234,7 +234,7 @@ PollMask
 	DCD	&3831
 
 TaskName
-	DCB	"Windows Keys",0
+	DCB	"WinKeys",0
 	ALIGN
 
 WindowDefinition

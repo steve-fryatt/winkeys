@@ -1,4 +1,4 @@
-# Copyright 2001-2013, Stephen Fryatt (info@stevefryatt.org.uk)
+# Copyright 2001-2020, Stephen Fryatt (info@stevefryatt.org.uk)
 #
 # This file is part of WinKeys:
 #
@@ -20,9 +20,9 @@
 # See the Licence for the specific language governing
 # permissions and limitations under the Licence.
 
-_TaskName:Windows Keys Setup
+_TaskName:WinKeys Setup
 _Purpose:Configuring Windows Keys
-_Author:© Stephen Fryatt, 2001-2014
+_Author:© Stephen Fryatt, 2001-2020
 _Version:0.23 (2 September 2014)
 _ConfigText:WinKeys
 _ConfigHelp:\Sset the actions of the Windows keys.
