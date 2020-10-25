@@ -1,4 +1,4 @@
-# Copyright 2013-2014, Stephen Fryatt (info@stevefryatt.org.uk)
+# Copyright 2013-2020, Stephen Fryatt (info@stevefryatt.org.uk)
 #
 # This file is part of WinKeys:
 #
@@ -96,7 +96,7 @@ OUTDIR := build
 
 MODULE := WinKeys,ffa
 README := ReadMe,fff
-LICENSE := Licence,fff
+LICENCE := Licence,fff
 CONFAPP := !WinKeys
 RUNIMAGE := !RunImage,ffb
 
@@ -106,6 +106,7 @@ RUNIMAGE := !RunImage,ffb
 MANSRC := Source
 MANSPR := ManSprite
 READMEHDR := Header
+LICSRC ?= Licence
 
 OBJS := WinKey.o
 
@@ -120,18 +121,21 @@ all: application documentation
 
 application: $(OUTDIR)/$(MODULE) $(OUTDIR)/$(CONFAPP)/$(RUNIMAGE)
 
+$(OUTDIR):
+	$(MKDIR) $(OUTDIR)
+
 # Build the complete module from the object files.
 
 OBJS := $(addprefix $(OBJDIR)/, $(OBJS))
 
-$(OUTDIR)/$(MODULE): $(OBJS) $(OBJDIR)
+$(OUTDIR)/$(MODULE): $(OBJS) $(OBJDIR) $(OUTDIR)
 	$(STRIP) $(STRIPFLAGS) -o $(OUTDIR)/$(MODULE) $(OBJS)
 
 # Build the configure plugin application from the source files.
 
 SRCS := $(addprefix $(SRCDIR)/, $(SRCS))
 
-$(OUTDIR)/$(CONFAPP)/$(RUNIMAGE): $(SRCS)
+$(OUTDIR)/$(CONFAPP)/$(RUNIMAGE): $(SRCS) $(OUTDIR)
 	$(TOKENIZE) $(TOKFLAGS) $(firstword $(SRCS)) -link -out $(OUTDIR)/$(CONFAPP)/$(RUNIMAGE) -path $(LIBPATHS) -define 'build_date$$=$(BUILD_DATE)' -define 'build_version$$=$(VERSION)'
 
 # Create a folder to hold the object files.
@@ -146,17 +150,20 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.s $(OBJDIR)
 
 # Build the documentation
 
-documentation: $(OUTDIR)/$(README)
+documentation: $(OUTDIR)/$(README) $(OUTDIR)/$(LICENCE)
 
-$(OUTDIR)/$(README): $(MANUAL)/$(MANSRC)
+$(OUTDIR)/$(README): $(MANUAL)/$(MANSRC) $(OUTDIR)
 	$(MANTOOLS) -MTEXT -I$(MANUAL)/$(MANSRC) -O$(OUTDIR)/$(README) -D'version=$(HELP_VERSION)' -D'date=$(HELP_DATE)'
+
+$(OUTDIR)/$(LICENCE): $(LICSRC) $(OUTDIR)
+	$(CP) $(LICSRC) $(OUTDIR)/$(LICENCE)
 
 
 # Build the release Zip file.
 
 release: clean all
 	$(RM) ../$(ZIPFILE)
-	(cd $(OUTDIR) ; $(ZIP) $(ZIPFLAGS) ../../$(ZIPFILE) $(CONFAPP) $(MODULE) $(README) $(LICENSE))
+	(cd $(OUTDIR) ; $(ZIP) $(ZIPFLAGS) ../../$(ZIPFILE) $(CONFAPP) $(MODULE) $(README) $(LICENCE))
 	$(RM) ../$(SRCZIPFILE)
 	$(ZIP) $(SRCZIPFLAGS) ../$(SRCZIPFILE) $(OUTDIR) $(SRCDIR) $(MANUAL) Makefile
 
@@ -174,5 +181,6 @@ clean:
 	$(RM) $(OBJDIR)/*
 	$(RM) $(OUTDIR)/$(MODULE)
 	$(RM) $(OUTDIR)/$(README)
+	$(RM) $(OUTDIR)/$(LICENCE)
 	$(RM) $(OUTDIR)/$(CONFAPP)/$(RUNIMAGE)
 
