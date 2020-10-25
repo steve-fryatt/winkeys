@@ -4,7 +4,7 @@
 #
 #   http://www.stevefryatt.org.uk/software/
 #
-# Licensed under the EUPL, Version 1.1 only (the "Licence");
+# Licensed under the EUPL, Version 1.2 only (the "Licence");
 # You may not use this work except in compliance with the
 # Licence.
 #
@@ -22,7 +22,7 @@
 
 _TaskName:WinKeys Setup
 _Purpose:Configuring Windows Keys
-_Author:© Stephen Fryatt, 2001-2020
+_Author:ï¿½ Stephen Fryatt, 2001-2020
 _Version:0.23 (2 September 2014)
 _ConfigText:WinKeys
 _ConfigHelp:\Sset the actions of the Windows keys.
