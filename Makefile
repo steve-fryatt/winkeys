@@ -121,6 +121,8 @@ all: application documentation
 
 application: $(OUTDIR)/$(MODULE) $(OUTDIR)/$(CONFAPP)/$(RUNIMAGE)
 
+# Create the output folder if it doesn't exist.
+
 $(OUTDIR):
 	$(MKDIR) $(OUTDIR)
 
